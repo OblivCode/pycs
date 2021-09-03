@@ -14,16 +14,17 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Projects\\vs extensions\\pycs\\pycs.csproj",
+      "projectUniqueName": "D:\\Projects\\vs extensions\\pycs\\src\\pycs.csproj",
       "projectName": "pycs",
-      "projectPath": "D:\\Projects\\vs extensions\\pycs\\pycs.csproj",
+      "projectPath": "D:\\Projects\\vs extensions\\pycs\\src\\pycs.csproj",
       "packagesPath": "C:\\Users\\david\\.nuget\\packages\\",
-      "outputPath": "D:\\Projects\\vs extensions\\pycs\\obj\\",
+      "outputPath": "D:\\Projects\\vs extensions\\pycs\\src\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
       ],
       "configFilePaths": [
+        "D:\\Projects\\vs extensions\\pycs\\src\\NuGet.Config",
         "C:\\Users\\david\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
@@ -32,8 +33,7 @@
         "net5.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://nuget.pkg.github.com/OWNER/index.json": {}
       },
       "frameworks": {
         "net5.0": {
