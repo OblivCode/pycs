@@ -11,6 +11,10 @@
     <StartupObject />
     <RepositoryUrl>https://github.com/OblivCode/pycs</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <PackageReleaseNotes>os functions and fixes</PackageReleaseNotes>
+    <Version>0.0.1</Version>
   </PropertyGroup>
 
 </Project>

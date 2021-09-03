@@ -20,8 +20,49 @@ namespace pycs
             
         }
         //pub
-        public static string input() => Console.ReadLine();
-        public static void print(object value, bool newline = true) => Console.WriteLine(value);
+        public static string input(string prompt)
+        {
+            if(prompt.Length > 0)
+                Console.Write(prompt);
+            return Console.ReadLine();
+        }
+        //print
+        public static void print(object value) => Console.WriteLine(value);
+        public static void print<T>(T[] obj)
+        {
+            string str = "[";
+            for(int i =0; i<obj.Length; i++)
+            {
+                str += obj[i] + ", ";
+            }
+            str = str.Trim().Trim(',') + "]";
+
+            Console.WriteLine(str);
+        }
+        public static void print<T>(List<T> obj)
+        {
+            string str = "[";
+            for (int i = 0; i < obj.Count; i++)
+            {
+                str += obj[i] + ", ";
+            }
+            str = str.Trim().Trim(',') + "]";
+
+            Console.WriteLine(str);
+        }
+        public static void print<TKey,TValue>(Dictionary<TKey,TValue> obj)
+        {
+            string str = "{";
+            foreach(var val in obj)
+            {
+                var key = val.Key;
+                var value = val.Value;
+                str += $"{val.Key}: {val.Value}, ";
+            }
+            str = str.Trim().Trim(',') + "}";
+
+            Console.WriteLine(str);
+        }
         //format
         public static string format(string value, string[] spec)
         { 
@@ -33,16 +74,32 @@ namespace pycs
                 value = regex.Replace(value, word, 1);            }
             return value;
         }
+        
         //types
         public static bool False { get { return false; } }
         public static bool True { get { return true; } }
-        public static object object_() => new object();
+        
+        public static object Object() => new object();
         public static List<T> list<T>() => new List<T>();
+
+        public static string type<T>(T obj)
+        {
+            string type = obj.GetType().Name.ToLower();
+            if (type.StartsWith("int"))
+                return "int";
+            else if (type.Contains('`'))
+                return type.Substring(0, type.IndexOf('`'));
+            else if (type == "single")
+                return "float";
+
+
+            return type;
+        }
         //type conversions
         public static string str(object obj) => obj.ToString();
-        public static int int_<T>(T value) => int.Parse(value.ToString());
-        public static float float_<T>(T value) => float.Parse(value.ToString());
-        public static bool bool_<T>(T value)
+        public static int Int<T>(T value) => int.Parse(value.ToString());
+        public static float Float<T>(T value) => float.Parse(value.ToString());
+        public static bool Bool<T>(T value)
         {
             if (is_num(value))
                 return (decimal.Parse(value.ToString()) == 0 ? false : true);
@@ -61,8 +118,8 @@ namespace pycs
         public static decimal eval(string expression) => (decimal)new DataTable().Compute(expression, "");
         //not
         public static bool not(bool value) => !value;
-        public static bool not(int value) => false ? value == 0 : true;
-        public static bool not(string value) => false ? value.Length == 0 : true;
+        public static bool not(int value) => value == 0 ? false : true;
+        public static bool not(string value) => string.IsNullOrEmpty(value) ? false : true;
 
         //len
         public static int len<T>(T[] obj) => obj.Length;
@@ -207,7 +264,7 @@ namespace pycs
             if (decimals < 0)
                 return Math.Round(number);
             else
-                return Math.Round(number);
+                return Math.Round(number, decimals);
         }
         
        
@@ -257,6 +314,27 @@ namespace pycs
             return a;
             
         }
+        //sum
+        public static decimal sum<T>(T[] obj)
+        {
+            decimal value = 0;
+            if (is_num(obj[0]))
+            {
+                for (int i = 0; i < obj.Length; i++)
+                    value += decimal.Parse(obj[i].ToString());
+            }
+            return value;
+        }
+        //range
+        public static int[] range(int until)
+        {
+            var array = new int[until];
+            for(int i = 0; i < until; i++)
+            {
+                array[i] = i;
+            }
+            return array;
+        }
 
         //file
         /// <summary>
@@ -281,24 +359,7 @@ namespace pycs
         
     
         
-    public static class os
-        {
-            //enviroment variables
-            public static void setenv(string key, string? value) => Environment.SetEnvironmentVariable(key, value);
-            public static string? getenv(string key) => Environment.GetEnvironmentVariable(key);
-            
-            public static Dictionary<string, string> globals()
-            {
-                var env_vars = Environment.GetEnvironmentVariables();
-                var dict = new Dictionary<string, string>();
-                foreach (var key in env_vars.Keys)
-                {
-                    var value = env_vars[key];
-                    dict.Add(key.ToString(), value.ToString());
-                }
-                return dict;
-            }
-        }
+    
 
     }
 }

@@ -1,6 +1,6 @@
-src/bin
-src/pycs.csproj
-src/nuget.config
-src/.vs
-src/obj
-src/pycs.sln
+*.sln
+*.csproj
+src/bin/
+src/.vs/
+src/ob/
+nuget.config

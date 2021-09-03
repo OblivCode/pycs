@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>pycs</id>
+    <version>0.0.1</version>
+    <authors>OblivCode</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <description>python functions in c#</description>
+    <releaseNotes>os functions and fixes</releaseNotes>
+    <repository url="https://github.com/OblivCode/pycs" />
+    <dependencies>
+      <group targetFramework="net5.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="D:\Projects\vs extensions\pycs\src\bin\Release\net5.0\pycs.dll" target="lib\net5.0\pycs.dll" />
+  </files>
+</package>
