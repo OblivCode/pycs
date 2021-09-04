@@ -1,6 +1,0 @@
-*.sln
-*.csproj
-src/bin/
-src/.vs/
-src/ob/
-nuget.config
