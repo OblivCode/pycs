@@ -2,7 +2,7 @@
 python functions in c#, net 5.0
 
 Install with .NET CLI:
-dotnet add package pycs --version 0.0.1
+dotnet add package pycs --version 0.1.0
 
 Nuget page:
 https://www.nuget.org/packages/pycs/
