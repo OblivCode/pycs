@@ -4,6 +4,7 @@ python functions in c#, net 5.0
 ```csharp
 using static pycs.pycs;
 using pycs.modules;
+using pycs.modules.datetime;
 
 namespace my_app
 {
@@ -11,9 +12,16 @@ namespace my_app
     {
         static void Main(string[] args)
         {
-            print("Hello world");
+            //print working directory
             string dir = os.getcwd();
-            print("Current directory: " + dir);
+            print(dir);
+            //print date and time
+            var now = datetime.now();
+            print(now.strftime("%m/%d/%Y, %H:%M:%S"));
+            //print platform
+            string platform = sys.platform;
+            print(platform);
+
         }
     }
 }
