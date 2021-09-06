@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace pycs
 {
@@ -337,14 +339,7 @@ namespace pycs
         }
 
         //file
-        /// <summary>
-        /// Modes: 't', 'b' and 'a' are not supported. 
-        /// Mode 'a' will do the same as mode 'w'.
-        /// Returns null if mode is incorrect.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="mode"></param>
-        /// <returns>FileStream</returns>
+
         public static FileStream open(string filename, char mode)
         {
             switch (mode)
@@ -356,10 +351,67 @@ namespace pycs
                 default: return null;
             }
         }
-        
-    
-        
-    
 
+
+        //custom classes
+        public class TextIO : MemoryStream
+        {
+            public async void write(string s)
+            {
+                byte[] buffer = Encoding.UTF8.GetBytes(s);
+                await this.WriteAsync(buffer, 0, buffer.Length);
+            }
+            public string read()
+            {
+                string output = "";
+                using (TextReader TR = new StreamReader(this))
+                {
+                    string line;
+                    while ((line = TR.ReadLine()) != null)
+                        output += line;
+                }
+                return output;
+            }
+            public async Task<string> readasync()
+            {
+                string output = "";
+                using(TextReader TR = new StreamReader(this))
+                {
+                    string line;
+                    while ((line = await TR.ReadLineAsync()) != null)
+                        output += line;
+                }
+                return output;
+            }
+        }
+
+        //exceptions
+        public class OSError : Exception
+        {
+            public string Error() => this.Message;
+            public OSError(string message)
+                : base(message)
+            {
+            }
+
+            public OSError(string message, Exception inner)
+                : base(message, inner)
+            {
+            }
+        }
+        public class FileExistsError : Exception
+        {
+            public string Error() => this.Message;
+
+            public FileExistsError(string message)
+                : base(message)
+            {
+            }
+
+            public FileExistsError(string message, Exception inner)
+                : base(message, inner)
+            {
+            }
+        }
     }
 }
