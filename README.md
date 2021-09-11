@@ -34,11 +34,11 @@ namespace my_app
             string platform = sys.platform;
             print(platform);
             //print from another thread
-            var thread1 = new threading.Thread(print, "Hello World");
+            var thread1 = new threading.Thread(print2, "Hello World");
             thread1.run();
         }
 
-        static void print(object obj) 
+        static void print2(object obj) 
         {
             string str = (string)obj;
             print(str)
