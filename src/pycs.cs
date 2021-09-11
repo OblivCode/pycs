@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pycs.modules;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,16 +14,9 @@ namespace pycs
 {
     public static class pycs
     {
-        private static bool is_num<T>(T value)
-        {
-            if (value is int || value is double || value is float || value is decimal)
-                return true;
-            else
-                return false;
-            
-        }
+        
         //pub
-        public static string input(string prompt)
+        public static string input(string prompt = "")
         {
             if(prompt.Length > 0)
                 Console.Write(prompt);
@@ -102,9 +96,9 @@ namespace pycs
         public static int Int<T>(T value) => int.Parse(value.ToString());
         public static float Float<T>(T value) => float.Parse(value.ToString());
         public static bool Bool<T>(T value)
-        {
-            if (is_num(value))
-                return (decimal.Parse(value.ToString()) == 0 ? false : true);
+        { 
+            if (!math.isnan(value))
+                return (double.Parse(value.ToString()) == 0 ? false : true);
             else if (value is string)
                 return value.ToString().Length == 0 ? false : true;
             else if (value is bool)
@@ -147,7 +141,7 @@ namespace pycs
             foreach (char c in text)
             {
                 int unicode = c;
-                ascii_text += unicode < 128 ? ((char)unicode) : "\\";
+                ascii_text += unicode < 128 ? Char.ConvertFromUtf32(unicode) : "\\";
             }
             return ascii_text;
         }
@@ -261,7 +255,7 @@ namespace pycs
         }
         //maths--------------
         //round
-        public static decimal round(decimal number, int decimals = -1)
+        public static double round(double number, int decimals = -1)
         {
             if (decimals < 0)
                 return Math.Round(number);
@@ -271,7 +265,7 @@ namespace pycs
         
        
         //abs
-        public static int abs(int value)
+        public static double abs(double value)
         {
             if (value >= 0)
                 return value;
@@ -279,48 +273,22 @@ namespace pycs
                 return value * -1;
         }
     //pow
-    public static double pow(double a, double b)
+    public static double pow(double b, double exp)
         {
-           
-            for (int i = 0; i < b; i++)
+            exp--;
+            double init = b;
+            for (int i = 0; i < exp; i++)
             {
-                a *= a;
+                b *= init;
             }
-            return a;
+            return b;
         }
-        public static float pow(float a, float b)
-        {
 
-            for (int i = 0; i < b; i++)
-            {
-                a *= a;
-            }
-            return a;
-        }
-        public static int pow(int a, int b)
-        {
-
-            for (int i = 0; i < b; i++)
-            {
-                a *= a;
-            }
-            return a;
-        }
-        public static decimal pow(decimal a, decimal b)
-        {
-
-            for (int i = 0; i < b; i++)
-            {
-                a *= a;
-            }
-            return a;
-            
-        }
         //sum
         public static decimal sum<T>(T[] obj)
         {
             decimal value = 0;
-            if (is_num(obj[0]))
+            if (!math.isnan(obj[0]))
             {
                 for (int i = 0; i < obj.Length; i++)
                     value += decimal.Parse(obj[i].ToString());
@@ -353,7 +321,7 @@ namespace pycs
         }
 
 
-        //custom classes
+       
         public class TextIO : MemoryStream
         {
             public async void write(string s)
@@ -399,6 +367,21 @@ namespace pycs
             {
             }
         }
+        public class RuntimeError : Exception
+        {
+            public string Error() => this.Message;
+
+            public RuntimeError(string message)
+                : base(message)
+            {
+            }
+
+            public RuntimeError(string message, Exception inner)
+                : base(message, inner)
+            {
+            }
+        }
+
         public class FileExistsError : Exception
         {
             public string Error() => this.Message;
@@ -413,5 +396,6 @@ namespace pycs
             {
             }
         }
+
     }
 }
