@@ -8,7 +8,7 @@ Added: string, threading, math
 -Added datetime, sys<br/>
 <br/>
 Install with .NET CLI:<br/>
-dotnet add package pycs --version 0.1.0<br/>
+dotnet add package pycs --version [version]<br/>
 <br/>
 Nuget page:<br/>
 https://www.nuget.org/packages/pycs/
@@ -33,9 +33,16 @@ namespace my_app
             //print platform
             string platform = sys.platform;
             print(platform);
+            //print from another thread
+            var thread1 = new threading.Thread(print, "Hello World");
+            thread1.run();
+        }
 
+        static void print(object obj) 
+        {
+            string str = (string)obj;
+            print(str)
         }
     }
 }
-
 ```
