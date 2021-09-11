@@ -1,16 +1,16 @@
 # pycs
-python functions in c#, net 5.0<br/>
-<br/>
-0.11.0<br/>
-Added: string, threading, math
-<br/><br/>
-0.1.0<br/>
--Added datetime, sys<br/>
-<br/>
-Install with .NET CLI:<br/>
-dotnet add package pycs --version [version]<br/>
-<br/>
-Nuget page:<br/>
+python functions in c#, net 5.0<
+
+0.11.0  
+Added string, threading, math
+
+0.1.0  
+Added datetime, sys
+
+Install with .NET CLI  
+dotnet add package pycs --version [version]
+
+Nuget page:
 https://www.nuget.org/packages/pycs/
 
 ```csharp
