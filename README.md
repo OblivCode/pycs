@@ -1,8 +1,11 @@
 # pycs
-python functions in c#, net 5.0
+python functions in c#, net 5.0<br/>
+<br/>
+0.11.0<br/>
+Added: string, threading, math
 <br/><br/>
 0.1.0<br/>
--Added datetime<br/>
+-Added datetime, sys<br/>
 <br/>
 Install with .NET CLI:<br/>
 dotnet add package pycs --version 0.1.0<br/>
