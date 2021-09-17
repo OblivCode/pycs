@@ -2,7 +2,7 @@
 python functions in c#, net 5.0
 
 0.12.0  
-Added time, random, logging, json, socket 
+Added time, random, logging, json, socket                        
 Note: See examples folder to see how socket class is used
          
 0.11.0  
@@ -34,19 +34,9 @@ namespace my_app
             //print date and time
             var now = datetime.now();
             print(now.strftime("%m/%d/%Y, %H:%M:%S"));
-            //print platform
-            string platform = sys.platform;
-            print(platform);
-            //print from another thread
-            var thread1 = new threading.Thread(print2, "Hello World");
-            thread1.run();
+
         }
 
-        static void print2(object obj) 
-        {
-            string str = (string)obj;
-            print(str)
-        }
     }
 }
 ```
