@@ -1,5 +1,5 @@
 # pycs
-python functions in c#, net 5.0<
+python functions in c#, net 5.0
 
 0.12.0  
 Added time, random, logging, json, socket
