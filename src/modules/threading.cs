@@ -14,7 +14,7 @@ namespace pycs.modules
 
         public int get_ident() => System.Threading.Thread.CurrentThread.ManagedThreadId;
 
-        public Thread current_thread()
+        public static Thread current_thread()
         {
             return new Thread(System.Threading.Thread.CurrentThread);
         }

@@ -182,9 +182,16 @@ namespace pycs.modules.datetime
             }
             return str;
         }
-       
+
+   
         
         public static datetime now() => new datetime(DateTime.Now);
         public static datetime utcnow() => new datetime(DateTime.UtcNow);
+
+        public override string ToString()
+        {
+           
+            return strftime("%d-%b-%y %H:%M:%S");
+        }
     }
 }

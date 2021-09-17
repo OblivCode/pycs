@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pycs.modules
 {
-    public class @string
+    public static class @string
     {
         public const string ascii_letters = ascii_lowercase + ascii_uppercase;
         public const string ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
@@ -18,6 +18,6 @@ namespace pycs.modules
         public const string printable = ascii_letters + digits + punctuation + whitespace;
         public const string whitespace = " ";
         
-
+        
     }
 }

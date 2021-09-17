@@ -12,7 +12,14 @@ namespace pycs.modules
         
         //enviroment variables
         public static void setenv(string key, string? value) => Environment.SetEnvironmentVariable(key, value);
-        public static string? getenv(string key) => Environment.GetEnvironmentVariable(key);
+        /// <exception cref="pycs.KeyError"></exception>
+        public static string getenv(string key)
+        {
+            string? val = Environment.GetEnvironmentVariable(key);
+            if (val == null)
+                throw new KeyError("Variable not found");
+            return val;
+        }
         public static Dictionary<string,string> environ
         {
             get {
