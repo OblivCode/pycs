@@ -11,7 +11,11 @@ namespace pycs.modules
     {
         
         //enviroment variables
-        public static void setenv(string key, string? value) => Environment.SetEnvironmentVariable(key, value);
+        public static string setenv(string key, string? value)
+        {
+            Environment.SetEnvironmentVariable(key, value);
+            return key;
+        }
         /// <exception cref="pycs.KeyError"></exception>
         public static string getenv(string key)
         {
@@ -35,7 +39,7 @@ namespace pycs.modules
         }
         //dir
         public static string getcwd() => Directory.GetCurrentDirectory();
-        public static void chdir(string path)
+        public static string chdir(string path)
         {
             if (!Directory.Exists(path))
                 throw new FileExistsError("Directory does not exist.");
@@ -43,27 +47,30 @@ namespace pycs.modules
             if (path == "..")
                 path = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
             Directory.SetCurrentDirectory(path);
+            return path;
         }
         /// <exception cref="pycs.FileExistsError"></exception>
-        public static void mkdir(string path)
+        public static string mkdir(string path)
         {
             if (Directory.Exists(path))
                 throw new FileExistsError("Directory already exists.");
-            Directory.CreateDirectory(path);
+            return Directory.CreateDirectory(path).FullName;
         }
         /// <exception cref="FileExistsError"></exception>
-        public static void remove(string filename)
+        public static string remove(string filename)
         {
             if (!File.Exists(filename))
                 throw new FileExistsError("File does not exist.");
             File.Delete(filename);
+            return filename;
         }
         /// <exception cref="pycs.FileExistsError"></exception>
-        public static void rmdir(string path)
+        public static string rmdir(string path)
         {
             if (!Directory.Exists(path))
                 throw new FileExistsError("Directory does not exist.");
             Directory.Delete(path);
+            return path;
         }
         public static string[] listdir(string path)
         {
@@ -105,6 +112,13 @@ namespace pycs.modules
             
         }
 
+        public static (string, string[], string[]) walk(string dir)
+        {
+            var root = dir;
+            var dirs = Directory.GetDirectories(dir);
+            var files = Directory.GetFiles(dir);
+            return (root, dirs, files);
+        }
         public static class path
         { 
             public static string join(string a, string b)
@@ -116,9 +130,11 @@ namespace pycs.modules
              
             }
 
+            public static bool isdir(string path) => Directory.Exists(path);
             public static bool exists(string filename) => File.Exists(filename);
 
             public static string basename(string path) => Path.GetFileName(path);
+            public static string dirname(string path) => Path.GetDirectoryName(path);
                 
             /// <exception cref="pycs.OSError"></exception>
             public static long getsize(string filename)
@@ -127,14 +143,19 @@ namespace pycs.modules
                     throw new OSError("File does not exist.");
                 return new FileInfo(filename).Length;
             }
-            public static Tuple<string, string> split(string path)
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="path"></param>
+            /// <returns>(root, tail)</returns>
+            public static (string,string) split(string path)
             {
                 int idx0 = path.LastIndexOf('/');
                 int idx1 = path.LastIndexOf('\\');
                 int idx = Math.Max(idx0, idx1);
                 string tail = path.Substring(idx);
                 string head = path.Substring(0, idx);
-                return Tuple.Create(head, tail);
+                return (head, tail);
             }
         }
 

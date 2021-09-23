@@ -11,7 +11,7 @@ namespace pycs.modules
 {
     public class socket
     {
-        private static string GetLocalIPAddress()
+        public static string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)
@@ -61,17 +61,19 @@ namespace pycs.modules
                 return buf;
             }
             /// <exception cref="ConnectionError"  />
-            public void sendall(string message)
+            public Connection sendall(string message)
             {
                 try { sendall(bytearray(message)); }
                 catch(ConnectionError ce) { throw ce; }
+                return this;
             }
             /// <exception cref="ConnectionError" />
-            public void sendall(byte[] bytes)
+            public Connection sendall(byte[] bytes)
             {
                 if (!socket.Connected)
                     throw new ConnectionError("Connection closed", ConnectionError.Type.BrokenPipeError);
                 socket.Send(bytes);
+                return this;
             }
             public void close() => this.socket.Close();
         }
@@ -84,28 +86,32 @@ namespace pycs.modules
                 client = new UdpClient(family);
             }
             /// <exception cref="ConnectionError" />
-            public void connect((string, int) endpoint)
+            public UDP connect((string, int) endpoint)
             {
                 try { connect(endpoint.Item1, endpoint.Item2); }
                 catch (ConnectionError ce) {  throw ce; }
+                return this;
             }
             /// <exception cref="ConnectionError" />
-            public void connect(string host, int port)
+            public UDP connect(string host, int port)
             {
                 try { client.Connect(host, port); }
                 catch (Exception e) { throw new ConnectionError(e.Message, ConnectionError.Type.BrokenPipeError, e); };
+                return this;
             }
             /// <exception cref="ConnectionError" />
-            public void sendall(string message)
+            public UDP sendall(string message)
             {
                 try { sendall(bytearray(message)); }
                 catch (ConnectionError ce) {  throw ce; }
+                return this;
             }
             /// <exception cref="ConnectionError" />
-            public void sendall(byte[]bytes)
+            public UDP sendall(byte[]bytes)
             {
                 try { client.Send(bytes, bytes.Length); }
                 catch (Exception e) { throw new ConnectionError(e.Message, ConnectionError.Type.BrokenPipeError, e); }
+                return this;
             }
 
             public byte[] recv(string host, int port)
@@ -125,13 +131,22 @@ namespace pycs.modules
             public TCP(AddressFamily family = AF_INET) => AF = family;
             //server-------------
             /// <exception cref="ConnectionError"
-            public void bind((string, int) endpoint)
+            public TCP bind((string, int) endpoint)
             {
                 listener = endpoint.Item1 == "localhost" ? new TcpListener(IPAddress.Parse("127.0.0.1"), endpoint.Item2)
                     : new TcpListener(IPAddress.Parse(endpoint.Item1), endpoint.Item2);
+                return this;
             }
-            public void listen() => listener.Start();
-            public void listen(int backlog) => listener.Start(backlog);
+            public TCP listen()
+            {
+                listener.Start();
+                return this;
+            }
+            public TCP listen(int backlog)
+            {
+                listener.Start(backlog);
+                return this;
+            }
             public (Connection, string) accept()
             {
                 if (listener == null)
@@ -148,14 +163,15 @@ namespace pycs.modules
             }
             //client------------
             /// <exception cref="ConnectionError" />
-            public void connect((string, int) endpoint)
+            public TCP connect((string, int) endpoint)
             {
                 try { connect(endpoint.Item1, endpoint.Item2); }
                 catch(ConnectionError ex) { throw ex; }
+                return this;
             }
 
             ///  <exception cref="ConnectionError" />
-            public void connect(string addr, int port)
+            public TCP connect(string addr, int port)
             {
                 try
                 {
@@ -167,22 +183,44 @@ namespace pycs.modules
                     print(ex.Message);
                     throw new ConnectionError(ex.Message, ConnectionError.Type.ConnectionRefusedError, ex);
                 }
+                return this;
             }
+            //------------sendall--------------
             /// <exception cref="ConnectionError" />
-            public void sendall(string message)
+            public TCP sendall(string message)
             {
                 byte[] buffer = bytearray(message);
                 
                 try { sendall(buffer); }
                 catch (ConnectionError ce) { throw ce; }
+                return this;
             }
             /// <exception cref="ConnectionError" />
-            public async void sendall(byte[] bytes)
+            public TCP sendall(byte[] bytes)
+            {
+                if (!client.Connected || client == null)
+                    throw new ConnectionError("Socket not connected", ConnectionError.Type.BrokenPipeError);
+                stream.Write(bytes, 0, bytes.Length);
+                return this;
+            }
+            /// <exception cref="ConnectionError" />
+            public async Task<TCP> sendall_async(string message)
+            {
+                byte[] buffer = bytearray(message);
+
+                try { await sendall_async(buffer); }
+                catch (ConnectionError ce) { throw ce; }
+                return this;
+            }
+            /// <exception cref="ConnectionError" />
+            public async Task<TCP> sendall_async(byte[] bytes)
             {
                 if (!client.Connected || client == null)
                     throw new ConnectionError("Socket not connected", ConnectionError.Type.BrokenPipeError);
                 await stream.WriteAsync(bytes, 0, bytes.Length);
+                return this;
             }
+            //---------------------------
             /// <exception cref="ConnectionError" />
             public byte[] recv(int buf_size)
             {
@@ -192,7 +230,7 @@ namespace pycs.modules
                 stream.Read(buffer, 0, buf_size);
                 return buffer;
             }
-            public async Task<byte[]> recvasync(int buf_size)
+            public async Task<byte[]> recv_async(int buf_size)
             {
                 if (client == null || !client.Connected)
                     throw new ConnectionError("Socket not connected", ConnectionError.Type.BrokenPipeError);
