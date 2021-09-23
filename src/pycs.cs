@@ -342,36 +342,41 @@ namespace pycs
             private bool read_ = true, write_ = true, append_ = false;
             public TextIOWrapper(string path, bool read = false, bool write = false, bool append = false)
             {
-                if (!os.path.exists(path)) File.Create(path);
+                
                 filepath = path;
                 read_ = read;
                 write_ = write;
                 append_ = append;
             }
 
-            public void append(string content)
+            public TextIOWrapper append(string content)
             {
                 if (!append_ && !write_) throw new PermissionError(invalid_perm);
                 File.AppendAllText(filepath, content);
+
+                return this;
             }
 
-            public async Task appendasync(string content)
+            public async Task<TextIOWrapper> append_async(string content)
             {
                 if (!append_ && !write_) throw new PermissionError(invalid_perm);
                 await File.AppendAllTextAsync(filepath, content);
+                return this;
             }
-            public void write(string content)
+            public new TextIOWrapper write(string content)
             {
                 if (!write_) throw new PermissionError(invalid_perm);
                 File.WriteAllText(filepath, content);
+                return this;
             }
 
-            public async Task writeasync(string content)
+            public new async Task<TextIOWrapper> write_async(string content)
             {
                 if (!write_) throw new PermissionError(invalid_perm);
                 await File.WriteAllTextAsync(filepath, content);
+                return this;
             }
-            public string read()
+            public new string read()
             {
                 if (!read_) throw new PermissionError(invalid_perm);
                 return File.ReadAllText(filepath);
@@ -384,11 +389,26 @@ namespace pycs
         }
         public class TextIO : MemoryStream
         {
-
-            public async void write(string content)
+            public TextIO write(string content)
             {
-                byte[] buffer = Encoding.UTF8.GetBytes(content);
-                await this.WriteAsync(buffer, 0, buffer.Length);
+                
+                try {
+                    byte[] buffer = Encoding.UTF8.GetBytes(content);
+                    Write(buffer, 0, buffer.Length);
+                }
+                catch (Exception e) { throw new BufferError(e.Message, e); }
+                return this;
+            }
+            /// <exception cref="BufferError" />
+            public async Task<TextIO> write_async(string content)
+            {
+                
+                try {
+                    byte[] buffer = Encoding.UTF8.GetBytes(content);
+                    await this.WriteAsync(buffer, 0, buffer.Length); 
+                }
+                catch (Exception e) { throw new BufferError(e.Message, e); }
+                return this;
             }
             public string read()
             {
@@ -401,7 +421,7 @@ namespace pycs
                 }
                 return output;
             }
-            public async Task<string> readasync()
+            public async Task<string> read_async()
             {
                 string output = "";
                 using (TextReader TR = new StreamReader(this))
@@ -423,18 +443,62 @@ namespace pycs
             public static implicit operator str(char value) => new str(value.ToString());
             public static implicit operator str(byte value) => new str(value.ToString());
             public static implicit operator str(byte[] value) => new str(Encoding.UTF8.GetString(value));
+            public string get { get { return this.value; }  }
             public override string ToString() => value;
             public override int GetHashCode() => value.GetHashCode();
             public override bool Equals(object obj) => value.Equals(obj);
+
+            //functions
+
+            public string capitalize()
+            {
+                value = value[0].ToString().ToUpper() + value.Substring(1);
+                return value;
+            }
+            public string casefold()
+            {
+                value = value.ToLower();
+                return value;
+            }
+            public int count() => value.Length;
+            public bool endswith(string suffix) => value.EndsWith(suffix);
+            public bool startswith(string prefix) => value.StartsWith(prefix);
+            public int find(string sub)
+            {
+                try { return value.IndexOf(sub); }
+                catch(Exception) {  return -1; }
+            }
+            public int index(string sub) => value.IndexOf(sub);
+            public string format(string[] spec)
+            {
+                foreach(string s in spec)
+                {
+                    if (value.IndexOf(s) == -1)
+                        break;
+                    value = value.Replace("{}", s);
+                }
+                return value;
+            }
+
+            public bool isalpha()
+            {
+                string alphanumeric = @string.digits + @string.ascii_letters;
+                foreach(char c in  value)
+                {
+                    if (!alphanumeric.Contains(c))
+                        return False;
+                }
+                return True;
+            }
         }
         //delegates
         public delegate EventHandler EmptyHandler();
         //exceptions
-        public class Error : Exception {
+        private class Error : Exception {
             public Error(string message) : base(message) {  }
             public Error(string message, Exception inner) : base(message,inner) { }
         }
-        public class OSError : Error
+        public class OSError : Exception
         {
             public string Error() => this.Message;
             public OSError(string message)
@@ -556,7 +620,7 @@ namespace pycs
             {
             }
         }
-        public class ConnectionError : Error
+        public class ConnectionError : Exception
         {
             public string Error() => this.Message;
             public Type ErrorType;
