@@ -1,12 +1,14 @@
 # pycs
 python functions in c#, net 5.0  
-Current Version: 1.12.1
+Current Version: 0.13.0
 
 Nuget page:
 https://www.nuget.org/packages/pycs/
 
 Install with .NET CLI:   
 dotnet add package pycs --version [version]
+  
+See Example folders for demonstrations.  
 
 Simple usage:
 
