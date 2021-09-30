@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,3 +11,17 @@ namespace pycs.modules
     {
     }
 }
+=======
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace pycs.modules
+{
+    class re
+    {
+    }
+}
+>>>>>>> origin/master
