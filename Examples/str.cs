@@ -11,6 +11,8 @@ namespace my_app
 
         static void Main()
         {
+            str bytes_str = new byte[12];
+            
             int[] r = range(4, 10);
 
             str print_array = "Array: {0}";
