@@ -5,13 +5,14 @@ using System.IO;
 using System.Linq;
 using static pycs.pycs;
 
+#nullable disable
 namespace pycs.modules
 {
     public static class os
     {
         
         //enviroment variables
-        public static string setenv(string key, string? value)
+        public static string setenv(string key, string value)
         {
             Environment.SetEnvironmentVariable(key, value);
             return key;
@@ -19,7 +20,7 @@ namespace pycs.modules
         /// <exception cref="pycs.KeyError"></exception>
         public static string getenv(string key)
         {
-            string? val = Environment.GetEnvironmentVariable(key);
+            string val = Environment.GetEnvironmentVariable(key);
             if (val == null)
                 throw new KeyError("Variable not found");
             return val;

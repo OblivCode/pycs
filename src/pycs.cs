@@ -9,6 +9,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static pycs.modules.io;
 
 namespace pycs
 {
@@ -109,6 +110,7 @@ namespace pycs
 
         }
         public static byte[] bytearray(string value) => Encoding.UTF8.GetBytes(value);
+        public static byte[] b(string value) => bytearray(value);
         public static char chr(int unicode) => char.Parse(char.ConvertFromUtf32(unicode));
         public static string hex(int number) => number.ToString("X");
         public static int hash(object obj) => obj.GetHashCode();
@@ -309,92 +311,94 @@ namespace pycs
             return array;
 
         }
-
-        //file
         /// <summary>
-        /// FileNotFoundError only possible with 'r' mode
-        /// returns null (if mode is invalid)
+        /// FileNotFoundError only possible with 'r' mode.
         /// </summary>
-        /// <exception cref="FileNotFoundError"
-        public static TextIOWrapper? open(string filename, string mode = "w+")
+        /// <exception cref="FileNotFoundError" ></exception>
+        public static TextIO open(string filename, string mode = "w+")
         {
+            return open<TextIO>(filename, mode);
+        }
+        /// <summary>
+        /// FileNotFoundError only possible with 'r' mode.
+        /// </summary>
+        /// <exception cref="FileNotFoundError" ></exception>
+        public static T open<T>(string filename, string mode = "w+")
+        {
+            Stream stream;
+            
             if (mode.StartsWith('r'))
                 if (!os.path.exists(filename))
                     throw new FileNotFoundError("File does not exist.");
-
+            
             switch (mode)
             {
-                case "r": try { return new TextIOWrapper(path: filename, read: true); } catch (Exception e) { throw new OSError(e.Message, e); }
-                case "r+": try { return new TextIOWrapper(path: filename, read: true, write: true); } catch (Exception e) { throw new OSError(e.Message, e); }
-                case "w": try { return new TextIOWrapper(path: filename, write: true); } catch (Exception e) { throw new OSError(e.Message, e); }
-                case "w+": try { return new TextIOWrapper(path: filename, write: true, read: true); } catch (Exception e) { throw new OSError(e.Message, e); }
-                case "a": try { return new TextIOWrapper(path: filename, append: true); } catch (Exception e) { throw new OSError(e.Message, e); }
-                case "a+": try { return new TextIOWrapper(path: filename, append: true, read: true); } catch (Exception e) { throw new OSError(e.Message, e); }
-                default: return null;
+                case "r":
+                    stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
+                    break;
+                case "w":
+                    {
+                        if (os.path.exists(filename))
+                            stream = new FileStream(filename, FileMode.Open, FileAccess.Write);
+                        else
+                            stream = new FileStream(filename, FileMode.CreateNew, FileAccess.Write);
+                        break;
+                    }
+                case "w+":
+                    {
+                        if (os.path.exists(filename))
+                            stream = new FileStream(filename, FileMode.Open, FileAccess.Write);
+                        else
+                            stream = new FileStream(filename, FileMode.CreateNew, FileAccess.Write);
+                        break;
+                    }
+                case "a":
+                    stream = new FileStream(filename, FileMode.Append, FileAccess.Write);
+                    break;
+                case "a+":
+                    stream = new FileStream(filename, FileMode.Append, FileAccess.ReadWrite);
+                    break;
+                default:
+                    stream = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite);
+                    break;
             }
+
+            IOBase _class = new RawIO(stream);
+           _class._stream = stream;
+
+            return (T)Convert.ChangeType(_class, typeof(T));
         }
 
-
-        public class TextIOWrapper : TextIO
+        public class TextIO : io.IOBase
         {
-            private string filepath = null;
-            private string invalid_perm = "Invalid permissions";
-            private bool read_ = true, write_ = true, append_ = false;
-            public TextIOWrapper(string path, bool read = false, bool write = false, bool append = false)
+            public TextIO(Stream stream, int pos = 0)
             {
-                
-                filepath = path;
-                read_ = read;
-                write_ = write;
-                append_ = append;
+                _stream = stream;
+                _stream.Position = pos;
             }
+            private TextReader reader { get { return new StreamReader(_stream);  } }
+            public string encoding { get {
+                    Stream clone_stream = new MemoryStream();
+                    _stream.CopyTo(clone_stream);
+                    var bom = new byte[4];
+                    clone_stream.Read(bom, 0, 4);
+                    clone_stream.Position -= 4;
 
-            public TextIOWrapper append(string content)
-            {
-                if (!append_ && !write_) throw new PermissionError(invalid_perm);
-                File.AppendAllText(filepath, content);
+                    // Analyze the BOM
+                    if (bom[0] == 0x2b && bom[1] == 0x2f && bom[2] == 0x76) return "UTF-7";
+                    if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) return "UTF-8";
+                    if (bom[0] == 0xff && bom[1] == 0xfe && bom[2] == 0 && bom[3] == 0) return "UTF-32LE"; 
+                    if (bom[0] == 0xff && bom[1] == 0xfe) return "UTF-16LE"; 
+                    if (bom[0] == 0xfe && bom[1] == 0xff) return "UTF-16BE"; 
+                    if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff) return "UTF-32BE";  
 
-                return this;
-            }
-
-            public async Task<TextIOWrapper> append_async(string content)
-            {
-                if (!append_ && !write_) throw new PermissionError(invalid_perm);
-                await File.AppendAllTextAsync(filepath, content);
-                return this;
-            }
-            public new TextIOWrapper write(string content)
-            {
-                if (!write_) throw new PermissionError(invalid_perm);
-                File.WriteAllText(filepath, content);
-                return this;
-            }
-
-            public new async Task<TextIOWrapper> write_async(string content)
-            {
-                if (!write_) throw new PermissionError(invalid_perm);
-                await File.WriteAllTextAsync(filepath, content);
-                return this;
-            }
-            public new string read()
-            {
-                if (!read_) throw new PermissionError(invalid_perm);
-                return File.ReadAllText(filepath);
-            }
-            public async Task<string> readasync()
-            {
-                if (!read_) throw new PermissionError(invalid_perm);
-                return await File.ReadAllTextAsync(filepath);
-            }
-        }
-        public class TextIO : MemoryStream
-        {
+                    return "ASCII";
+                } }
             public TextIO write(string content)
             {
-                
                 try {
                     byte[] buffer = Encoding.UTF8.GetBytes(content);
-                    Write(buffer, 0, buffer.Length);
+                    _stream.Write(buffer, 0, buffer.Length);
                 }
                 catch (Exception e) { throw new BufferError(e.Message, e); }
                 return this;
@@ -405,7 +409,7 @@ namespace pycs
                 
                 try {
                     byte[] buffer = Encoding.UTF8.GetBytes(content);
-                    await this.WriteAsync(buffer, 0, buffer.Length); 
+                    await _stream.WriteAsync(buffer, 0, buffer.Length); 
                 }
                 catch (Exception e) { throw new BufferError(e.Message, e); }
                 return this;
@@ -413,28 +417,45 @@ namespace pycs
             public string read()
             {
                 string output = "";
-                using (TextReader TR = new StreamReader(this))
-                {
-                    string line;
-                    while ((line = TR.ReadLine()) != null)
-                        output += line;
-                }
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                    output += line;
                 return output;
             }
             public async Task<string> read_async()
             {
                 string output = "";
-                using (TextReader TR = new StreamReader(this))
-                {
-                    string line;
-                    while ((line = await TR.ReadLineAsync()) != null)
-                        output += line;
-                }
+                string line;
+                while ((line = await reader.ReadLineAsync()) != null)
+                    output += line;
                 return output;
             }
-
-            public void close() => this.Close();
         }
+        public class RawIO : IOBase
+        {
+            public RawIO(Stream stream)
+            {
+                _stream = stream;
+            }
+
+            public byte[] readall()
+            {
+                long pos = _stream.Position;
+                _stream.Position = 0;
+                byte[] buffer = new byte[_stream.Length];
+                _stream.Read(buffer, 0, buffer.Length);
+                _stream.Position = pos;
+                return buffer;
+            }
+
+            public RawIO readinto(ref byte[] array)
+            {
+                byte[] bytes = readall();
+                bytes.CopyTo(array, array.Length);
+                return this;
+            }
+        }
+       
         //type
         public class str {
             private string value;
