@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 0.13.0
 * 1) Added classes: path(pathlib), ZipFile(zipfile), ZipInfo(zipfile), io
 * 2) IOBase added for inheritance for IOs.
@@ -22,27 +21,3 @@ Added string, threading, math
 
 0.1.0  
 Added datetime, sys
-
-Install with .NET CLI  
-dotnet add package pycs --version [version]
-=======
-
-0.12.1
-Changed naming of async methods from [name]async to [name]_async
-Added more exception throws
-Functions return base class or related object 
-Replaced async voids with async Tasks
-
-0.12.0  
-Added time, random, logging, json, socket                        
-Note: See examples folder to see how socket class is used
-         
-0.11.0  
-Added string, threading, math
-
-0.1.0  
-Added datetime, sys
-
-Install with .NET CLI  
-dotnet add package pycs --version [version]
->>>>>>> origin/master
