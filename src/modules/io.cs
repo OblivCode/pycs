@@ -12,7 +12,7 @@ namespace pycs.modules
         }
         public class IOBase
         {
-            public Stream _stream;
+            protected Stream _stream;
 
             public bool closed = false;
             public bool readable() => _stream.CanRead; 
@@ -25,27 +25,50 @@ namespace pycs.modules
                 _stream.SetLength(size);
                 return this;
             }
+            /// <summary>
+            /// Seek a position within the stream
+            /// </summary>
+            /// <param name="offset"></param>
+            /// <param name="whence"></param>
+            /// <returns></returns>
             public IOBase seek(int offset, int whence = 0)
             {
                 SeekOrigin origin = whence == 0 ? SeekOrigin.Begin : whence == 1 ? SeekOrigin.Current : SeekOrigin.End;
                 _stream.Seek(offset, origin);
                 return this;
             }
+            /// <summary>
+            /// Write to stream.
+            /// </summary>
+            /// <param name="data">Byte to be written</param>
+            /// <returns></returns>
             public IOBase write(byte data)
             {
                 _stream.WriteByte(data);
                 return this;
             }
-            public IOBase write(byte[] data)
+            /// <summary>
+            /// Write to stream.
+            /// </summary>
+            /// <param name="data">Bytes to be written</param>
+            public IOBase write(bytes data)
             {
-                _stream.Write(data, 0, data.Length);
+                _stream.Write(data.ToStandard(), 0, len(data));
                 return this;
             }
-            public async Task<IOBase> write_async(byte[] data)
+            /// <summary>
+            /// Write to stream asynchronously.
+            /// </summary>
+            /// <param name="data">Bytes to be written</param>
+            public async Task<IOBase> write_async(bytes data)
             {
-                await _stream.WriteAsync(data, 0, data.Length);
+                await _stream.WriteAsync(data.ToStandard(), 0, len(data));
                 return this;
             }
+            /// <summary>
+            /// Read bytes from stream.
+            /// </summary>
+            /// <param name="size">Amount of bytes to read</param>
             public byte[] read(int size = -1)
             {
                 byte[] buffer = size == -1 ? new byte[0] : new byte[size];
@@ -58,6 +81,10 @@ namespace pycs.modules
 
                 return buffer;
             }
+            /// <summary>
+            /// Read bytes from stream asynchronously.
+            /// </summary>
+            /// <param name="size">Amount of bytes to read</param>
             public async Task<byte[]> read_async(int size = -1)
             {
                 byte[] buffer = size == -1 ? new byte[0] : new byte[size];
@@ -70,12 +97,21 @@ namespace pycs.modules
                 
                 return buffer;
             }
+            /// <summary>
+            /// Flush stream.
+            /// </summary>
             public IOBase flush()
             {
                 _stream.Flush();
                 return this;
             }
+            /// <summary>
+            /// Flush stream asynchronously.
+            /// </summary>
             public async Task flush_async() => await _stream.FlushAsync();
+            /// <summary>
+            /// Close and dispose stream.
+            /// </summary>
             public void close()
             {
                 _stream.Dispose();

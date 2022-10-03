@@ -1,9 +1,29 @@
+0.14.0
+* Added overloads for str class functions index, format, find, endswith, startswith.
+* Added more sub classes of DateTime: date, time.
+* Added function weekday() and public property day to datetime class.
+* Added repr() support for date, time and str(alternatively use the get() function for the str data type).
+* Added number assignment support for str data type.
+* Added bytes data type. This class inherits from IEnumerator. To convert encoding, use the SetEncoding() function of the data type.
+* ToStandard() function added to data types to retrieve C# equivalent.
+* Added copy() function.
+* Added more support for the str class in global functions.
+* 
+* IMPORTANT
+* Built-in C# errors are now only used.
+* 
+* NOTE
+* date and time can be converted to and from DateTime(standard c# class) and datetime(pycs class).
+* str class now inherits IEnumerable.
+* Re-naming will no longer occur from this version onwards.
+
+
 0.13.0
 * 1) Added classes: path(pathlib), ZipFile(zipfile), ZipInfo(zipfile), io
 * 2) IOBase added for inheritance for IOs.
 * 3) added IO classes: RawIO, StringIO, BytesIO
 * 4) Added alias 'b' for function 'bytearray'
-* Note: Defualt c# memory functions no longer usable with TextIO (and new RawIO).
+* Note: Default c# memory functions no longer usable with TextIO (and new RawIO).
 * get() function added to classes that should represent a value that isn't a python class (e.g. str, int).
 
 0.12.1
