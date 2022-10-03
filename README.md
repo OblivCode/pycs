@@ -1,6 +1,6 @@
 # pycs
-python functions in c#, net 5.0  
-Current Version: 0.13.0
+python functions in c#, net 6.0  
+Current Version: 0.14.0
 
 Nuget page:
 https://www.nuget.org/packages/pycs/
